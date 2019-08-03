@@ -1,0 +1,89 @@
+#include "syscall.h"
+#include "stdio.h"
+#include "stdlib.h"
+
+#define CPYBUFSZ 100
+
+int fs_test() {
+	
+	// testID 1 : calls syscall creat/close/unlink and checks that they work
+	const char filename[] = "test.file";
+	int fd = creat(filename);
+	assert(fd == 2);
+	assert(sizeof(filename) == write(fd, filename, sizeof(filename)));
+	printf("type a char: ");
+	char c = getch();
+	assert(1 == write(fd, &c, 1));
+	close(fd);	
+	
+	fd = open(filename);
+	char buffer[sizeof(filename)];
+	c = 0;
+	assert(fd == 2);
+	assert(sizeof(filename) == read(fd, buffer, sizeof(filename)));
+	printf("%s\n", buffer);
+	assert(1 == read(fd, &c, 1));
+	printf("%c\n", c);
+	close(fd);
+	unlink(filename);
+	
+	// testID 3 : tests if your syscall open fails gracefully when stubFileSystem's openfile limit's exceeded
+	const char filename2[] = "test.file  ";
+	int i;
+	for (i = 2; i < 16; ++i) {
+		sprintf(filename2, "test.file%d", i);
+		assert(creat(filename2) >= 0);
+	}
+	assert(creat(filename) == -1);
+	for (i = 2; i < 16; ++i) {
+		assert(close(i) != -1);
+	}
+	for (i = 2; i < 16; ++i) {	
+		sprintf(filename2, "test.file%d", i);
+		assert(unlink(filename2) != -1);
+	}
+
+	// testID 7 : copies between files, tests creat, open, read, write, close
+	int src = open("proj2-test.c");
+	int dst = creat("proj2-test.dup");
+	char cpybuf[CPYBUFSZ];
+	while ((i = read(src, cpybuf, CPYBUFSZ)) > 0) {
+		assert(write(dst, cpybuf, i) == i);
+	}
+	close(src);
+	close(dst);
+	
+	// testID 8 : tests that write fails gracefully on bad arguements (e.g. bad address) 
+	// testID 9 : tests that read fails gracefully on bad arguments (e.g. writing back to a readonly part of virtual memory) 
+	fd = open("proj2-test.dup");
+	assert(-1 == write(fd, (void*) 0x7FFE1234, 0x7FFFFFFF));
+	assert(-1 == read(fd, (void *) 0x00000000, 100));
+	close(fd);
+}
+
+void mp_test() {
+	// testID 3 : tests exec with error arguments (e.g. bad file name) 
+	assert(-1 == exec("hahaha.haha", 0, 0));
+	// test that halt don't work for non-root thread
+	halt();
+	// testID 4 : tests your syscall join to a non-child 
+	int retval;
+	assert(-1 == join(1, &retval));		// 1 should be the pid of shell or myself
+}
+
+int main() {
+	printf("file-system test\n");
+	fs_test();
+	printf("file-system test finished\n");	
+	
+	printf("multi-programming test\n");
+	mp_test();
+	printf("multi-programming test finished\n");
+	
+	// testID 0 : tests that your syscall exit finishes the thread of the process immediately
+	exit(23);
+	
+	assert(0);
+}
+0);
+}

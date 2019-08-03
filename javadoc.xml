@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="javadoc">
+<target name="javadoc">
+<javadoc access="public" author="true" classpath="." destdir="X:\home\micky\My Documents\Assignments\nachos5\doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="nachos.userprog,nachos.network,nachos.security,nachos.machine,nachos.threads,nachos.ag,nachos.vm" source="1.3" sourcepath="X:\home\micky\My Documents\Assignments\nachos5\project" splitindex="true" use="true" version="true">
+<link href="file:/C:/Program Files/Java/jdk1.3.1_16/docs/api/"/>
+</javadoc>
+</target>
+</project>

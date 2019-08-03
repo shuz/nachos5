@@ -1,0 +1,8 @@
+CoffSection.java
+
+line 40:
+	if (vaddr%Processor.pageSize != 0 || size < 0 || 
+	    contentOffset < 0 /*|| contentOffset+size > file.length()*/) {
+
+
+this bug makes matmult unable to be executed.
